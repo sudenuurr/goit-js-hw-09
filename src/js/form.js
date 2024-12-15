@@ -1,47 +1,29 @@
-const form = document.querySelector('.feedback-form');
-const LOCAL_STORAGE_KEY = 'feedback-form-state';
+const formItem = document.querySelector('.feedback-form');
+const mailInput = document.querySelector('#exampleFormControlInput1');
+const messageInput = document.querySelector('#exampleFormControlTextarea1');
 
-form.addEventListener('input', onFormInput);
-form.addEventListener('submit', onFormSubmit);
-
-function onFormInput() {
-  const formData = new FormData(form);
-  const formObject = {};
-
-  formData.forEach((value, key) => {
-    formObject[key] = value;
-  });
-
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formObject));
+const savedData = JSON.parse(localStorage.getItem('feedback-form-state'));
+if (savedData) {
+  mailInput.value = savedData.email || '';
+  messageInput.value = savedData.message || '';
 }
 
-function onFormSubmit(e) {
-  e.preventDefault();
-  const formData = new FormData(e.currentTarget);
-  const formObject = {};
-  let allFieldFilled = true;
+formItem.addEventListener('input', () => {
+  const formData = {
+    email: mailInput.value,
+    message: messageInput.value,
+  };
+  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+});
 
-  formData.forEach((value, key) => {
-    if (value === '') {
-      allFieldFilled = false;
-    } else {
-      formObject[key] = value;
-    }
-  });
+formItem.addEventListener('submit', event => {
+  event.preventDefault();
 
-  if (allFieldFilled) {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formObject));
-    console.log(formObject);
-    form.reset();
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  if (mailInput.value && messageInput.value) {
+    // localStorage.removeItem('feedback-form-state');
+    formItem.reset();
+    alert('Form başarıyla gönderildi!');
   } else {
-    alert('Lütfen alanı boş bırakmayınız.');
-  }
-}
-window.addEventListener('load', () => {
-  const savedData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-  if (savedData) {
-    form.email.value = savedData.email;
-    form.message.value = savedData.message;
+    alert('Lütfen gerekli alanları doldurunuz...');
   }
 });
